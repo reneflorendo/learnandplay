@@ -4,20 +4,19 @@ import 'package:learnandplay/Models/Pages.dart';
 
 class Topics
 {
-  late String? id;
+  late String id;
   late String title;
   late String duration;
   late String icon;
-  late List<Pages>? pages;
-
+  late List<Pages> pages;
   Topics({required this.id, required this.title, required this.duration, required this.icon, required this.pages});
 
-  Topics.fromSnapshot(DataSnapshot dataSnapshot)
-  {
-    id = dataSnapshot.key;
-    title = dataSnapshot.value["title"];
-    duration = dataSnapshot.value["duration"];
-    icon = dataSnapshot.value["icon"];
-    pages = dataSnapshot.value["pages"];
-  }
+  // Topics.fromSnapshot(DataSnapshot dataSnapshot)
+  // {
+  //   id = dataSnapshot.key;
+  //   title = dataSnapshot.value["title"];
+  //   duration = dataSnapshot.value["duration"];
+  //   icon = dataSnapshot.value["icon"];
+  //   pages = dataSnapshot.value["pages"];
+  // }
 }

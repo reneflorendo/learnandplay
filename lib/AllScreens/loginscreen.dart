@@ -19,6 +19,17 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Map pageMap={
+    //   "topicId":"-MkuV1UjWaOgY8PQii8-",
+    //   "text":"About List",
+    //   "description": "List<T> class represents the list of objects which can be accessed by index. It comes under the System.Collection.Generic namespace.",
+    //   "pageImage":"",
+    //   "sourceType":"",
+    //   "Order":"1",
+    //   "IsActive":"1",
+    // };
+    //
+    // pagesRef.push().set(pageMap);
    // getData(context);
 
     // topicsRef.once().then(( DataSnapshot dataSnapshot){
@@ -154,59 +165,61 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-   void getData(BuildContext context) async{
-     topicsRef.once().then((DataSnapshot snapshot){
-       print(snapshot.value);
-       print(snapshot.key);
-       snapshot.value.forEach((key,values) {
-
-         Map<String, dynamic> data = new Map<String, dynamic>.from(values["pages"]);
-         data.forEach((key, values) {
-            Pages page= new Pages(id: key
-                , text: values["text"]
-                , description: values["description"]
-                , sourceType: values["sourceType"]
-                , pageImage: values["pageImage"]
-                , isActive:  values["IsActive"]=="true"
-                , order: int.parse(values["Order"]));
-            _pages.add(page);
-         });
-
-         Topics topic=new Topics(
-             id: key,
-             title: values['title'],
-             duration: values["duration"],
-             icon: values["icon"],
-             pages: _pages);
-
-         _topics.add(topic);
-         //print(values);
-       });
-
-       var data =_topics;
-     }).catchError((errMsg){
-         displayToastMessage("Error"+errMsg, context);
-       });
-   }
+   // void getData(BuildContext context) async{
+   //   topicsRef.once().then((DataSnapshot snapshot){
+   //     print(snapshot.value);
+   //     print(snapshot.key);
+   //     snapshot.value.forEach((key,values) {
+   //
+   //       Map<String, dynamic> data = new Map<String, dynamic>.from(values["pages"]);
+   //       data.forEach((key, values) {
+   //          Pages page= new Pages(id: key
+   //              , text: values["text"]
+   //              , description: values["description"]
+   //              , sourceType: values["sourceType"]
+   //              , pageImage: values["pageImage"]
+   //              , isActive:  values["IsActive"]=="true"
+   //              , order: int.parse(values["Order"]));
+   //          _pages.add(page);
+   //       });
+   //
+   //       Topics topic=new Topics(
+   //           id: key,
+   //           title: values['title'],
+   //           duration: values["duration"],
+   //           icon: values["icon"],
+   //           pages: _pages);
+   //
+   //       _topics.add(topic);
+   //       //print(values);
+   //     });
+   //
+   //     var data =_topics;
+   //   }).catchError((errMsg){
+   //       displayToastMessage("Error"+errMsg, context);
+   //     });
+   // }
   final FirebaseAuth _firebaseAuth=FirebaseAuth.instance;
 
   void loginAndAuthenticateUser(BuildContext context) async{
 
     // Map pageMap={
-    //   "text":"Search an element in a Linked List (Iterative and Recursive)",
-    //   "description": "Syntax: bool search(Node *head, int x) ",
-    //   "pageImage":"",
+    //   "topicId":"-MkuP45mdhSr6d2dxwwt",
+    //   "text":"About Array",
+    //   "description": "An array is a group of like-typed variables that are referred to by a common name",
+    //   "pageImage":"array.png",
     //   "sourceType":"1",
-    //   "Order":"3",
+    //   "Order":"1",
     //   "IsActive":"1",
     // };
     //
-    // topicsRef.child("-MkuW_3qta9F_S2lKtxx").child("pages").push().set(pageMap);
+    // pagesRef.push().set(pageMap);
+    //topicsRef.child("-MkuW_3qta9F_S2lKtxx").child("pages").push().set(pageMap);
     // Map topicDataMap={
     //   "title":"Queue",
     //   "duration":"15 Minutes",
     //   "icon":"queue.png"
-    // };MkuP45mdhSr6d2dxwwt
+    // };
 
     // var ref=topicsRef.push();
     // var uniqueKey= ref.key;

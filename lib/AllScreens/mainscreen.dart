@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/registrationscreen.dart';
+import 'package:learnandplay/AllScreens/slides.dart';
 import 'package:learnandplay/Models/Pages.dart';
 import 'package:learnandplay/Models/Topics.dart';
 import 'package:learnandplay/main.dart';
@@ -24,9 +25,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
+        drawer: Navigation(),
         appBar: AppBar(
           title: Text("Data Structure"),
         ) ,
@@ -45,85 +45,87 @@ class _MainScreenState extends State<MainScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        // Column(
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //
-                        //   children: <Widget>[
-                        //     Text(
-                        //       topic.title,
-                        //       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                        //     ),
-                        //     Text(
-                        //       topic.duration,
-                        //       style: const TextStyle(fontSize: 17, color: Colors.grey),
-                        //     ),
-                        //     SizedBox(
-                        //       height: 10,
-                        //     ),
-                        //     Row(
-                        //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //
-                        //       children: <Widget>[
-                        //         SizedBox(
-                        //           height: 10,
-                        //           //width: 20,
-                        //         ),
-                        //         RaisedButton(
-                        //           color:Colors.blue,
-                        //           textColor: Colors.white,
-                        //           child: Container(
-                        //             height: 50.0,
-                        //             child: Center(
-                        //               child: Text(
-                        //                 "Learn",
-                        //                 style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
-                        //               ) ,
-                        //             ),
-                        //           ),
-                        //           shape: new RoundedRectangleBorder(
-                        //               borderRadius: new BorderRadius.circular(24.0)
-                        //           ),
-                        //           onPressed: (){
-                        //             // Navigator.pushAndRemoveUntil(context,
-                        //             //   MaterialPageRoute(builder: (BuildContext context) => Landing()),
-                        //             //   ModalRoute.withName('/'),);
-                        //
-                        //           },
-                        //         ),
-                        //         SizedBox(
-                        //           height: 10,
-                        //           //width: 20,
-                        //         ),
-                        //         RaisedButton(
-                        //           color:Colors.blue,
-                        //           textColor: Colors.white,
-                        //           child: Container(
-                        //             height: 50.0,
-                        //             child: Center(
-                        //               child: Text(
-                        //                 "Play1",
-                        //                 style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
-                        //               ) ,
-                        //             ),
-                        //           ),
-                        //           shape: new RoundedRectangleBorder(
-                        //               borderRadius: new BorderRadius.circular(24.0)
-                        //           ),
-                        //           onPressed: (){
-                        //             // Navigator.pushAndRemoveUntil(context,
-                        //             //   MaterialPageRoute(builder: (BuildContext context) => Landing()),
-                        //             //   ModalRoute.withName('/'),);
-                        //
-                        //           },
-                        //         ),
-                        //       ],
-                        //     )
-                        //
-                        //   ],
-                        // ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                          children: <Widget>[
+                            Text(
+                              topic.title,
+                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              topic.duration,
+                              style: const TextStyle(fontSize: 17, color: Colors.grey),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 5,
+                                  width: 3,
+                                ),
+                                RaisedButton(
+                                  color:Colors.blue,
+                                  textColor: Colors.white,
+                                  child: Container(
+                                    height: 20.0,
+                                    child: Center(
+                                      child: Text(
+                                        "Learn",
+                                        style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
+                                      ) ,
+                                    ),
+                                  ),
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius: new BorderRadius.circular(24.0)
+                                  ),
+                                  onPressed: (){
+                                   var pages= getPages(topic.id);
+                                    // Navigator.pushAndRemoveUntil(context,
+                                    //   MaterialPageRoute(builder: (BuildContext context) => Slides(topic.id)),
+                                    //   ModalRoute.withName('/'),);
+
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                  width: 3,
+                                ),
+                                RaisedButton(
+                                  color:Colors.blue,
+                                  textColor: Colors.white,
+                                  child: Container(
+                                    height: 20.0,
+                                    child: Center(
+                                      child: Text(
+                                        "Play",
+                                        style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
+                                      ) ,
+                                    ),
+                                  ),
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius: new BorderRadius.circular(24.0)
+                                  ),
+                                  onPressed: (){
+                                    // Navigator.pushAndRemoveUntil(context,
+                                    //   MaterialPageRoute(builder: (BuildContext context) => Landing()),
+                                    //   ModalRoute.withName('/'),);
+
+                                  },
+                                ),
+                              ],
+                            )
+
+                          ],
+                        ),
                         Image.asset(
-                          "images/lap.png",
+                          "images/"+topic.icon,
                           height: double.infinity,
+                          width:90
                         )
                       ],
                     ),
@@ -139,33 +141,79 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Pages convertData(String key, values){
+        return new Pages(id: key
+        , text: values["text"]
+        , description: values["description"]
+        , sourceType: values["sourceType"]
+        , pageImage: values["pageImage"]
+        , isActive: values["isActive"]
+        , order: values["order"]);
+  }
+
+  void getPages(String topicId) {
+    List<Pages> pages=[];
+    pagesRef
+        .orderByChild("topicId")
+        .equalTo(topicId)
+        .once()
+        .then((DataSnapshot snapshot){
+      // print(snapshot.value);
+      // print(snapshot.key);
+      snapshot.value.forEach((key,values) {
+
+        Pages page= new Pages(id: key
+            , text: values["text"]
+            , description: values["description"]
+            , sourceType: values["sourceType"]
+            , pageImage: values["pageImage"]
+            , isActive:  values["IsActive"]=="true"
+            , order: int.parse(values["Order"]));
+
+        _pages.add(page);
+
+        //print(values);
+      });
+      Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages)),
+        ModalRoute.withName('/'),);
+       //return pages;
+    });
+  }
+
   void getData(BuildContext context) async{
     List<Topics> topics=[];
+    List<Pages> pg=[];
     await topicsRef.once().then((DataSnapshot snapshot){
       print(snapshot.value);
       print(snapshot.key);
       snapshot.value.forEach((key,values) {
-
-        Map<String, dynamic> data = new Map<String, dynamic>.from(values["pages"]);
-        data.forEach((key, values) {
-          Pages page= new Pages(id: key
-              , text: values["text"]
-              , description: values["description"]
-              , sourceType: values["sourceType"]
-              , pageImage: values["pageImage"]
-              , isActive:  values["IsActive"]=="true"
-              , order: int.parse(values["Order"]));
-          _pages.add(page);
-        });
+      //  pg.clear();
+      //  Map<String, Pages> data = new Map<String, Pages>.from(values["pages"]);
+       // var xxx=data.map((key, value) => MapEntry(key,convertData(key,values)));
+        // data.forEach((key, values) {
+        //  pg.add( new Pages(id: key
+        //       , text: values["text"]
+        //       , description: values["description"]
+        //       , sourceType: values["sourceType"]
+        //       , pageImage: values["pageImage"]id
+        //       , isActive:  values["IsActive"]=="true"
+        //       , order: int.parse(values["Order"])));
+        //
+        // });
 
         Topics topic=new Topics(
             id: key,
             title: values['title'],
             duration: values["duration"],
             icon: values["icon"],
-            pages: _pages);
+            pages: pg);
 
-        topics.add(topic);
+         setState(() {
+           topics.add(topic);
+         });
+
+
         //print(values);
       });
       setState(() {

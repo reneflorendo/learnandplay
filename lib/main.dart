@@ -19,6 +19,7 @@ void main() async{
 //FirebaseDatabase database = new FirebaseDatabase();
 DatabaseReference usersRef= FirebaseDatabase.instance.reference().child("users");
 DatabaseReference topicsRef= FirebaseDatabase.instance.reference().child("topics");
+DatabaseReference pagesRef= FirebaseDatabase.instance.reference().child("pages");
 
 
 class MyApp extends StatelessWidget {

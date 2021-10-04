@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:learnandplay/AllScreens/loginscreen.dart';
 import 'package:learnandplay/widget/changepassword.dart';
 import 'package:learnandplay/widget/profile.dart';
 import 'package:learnandplay/widget/topicscomplete.dart';
 
 class Navigation extends StatelessWidget {
+  final FirebaseAuth _firebaseAuth=FirebaseAuth.instance;
+
   final padding = EdgeInsets.symmetric(horizontal: 5);
   @override
   Widget build(BuildContext context) {
@@ -49,7 +53,7 @@ class Navigation extends StatelessWidget {
             buildMenuItem(
                 text:"Log out",
                 icon:Icons.logout,
-                onClicked: ()=> selectedItem(context, 2)
+                onClicked: ()=> selectedItem(context, 3)
             ),
           ],
         ) ,
@@ -88,6 +92,9 @@ class Navigation extends StatelessWidget {
       case 2:
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => TopicsComplete()));
         break;
+      case 3:
+        _firebaseAuth.signOut();
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
     }
   }
 
