@@ -13,18 +13,6 @@ class Pages
 
   Pages({required this.id, required this.text, required this.description, required this.sourceType,required this.pageImage,required this.isActive,required this.order,});
 
-  static Pages fromEntity(String key,dynamic entity) {
-    return Pages(
-      id: key,
-      text: entity.text,
-      description: entity.description,
-      sourceType: entity.sourceType,
-      pageImage: entity.pageImage,
-      isActive: entity.isActive,
-      order: entity.order,
-    );
-  }
-
   Pages.fromSnapshot(DataSnapshot dataSnapshot)
   {
     id = dataSnapshot.key;

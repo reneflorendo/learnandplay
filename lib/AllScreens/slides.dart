@@ -7,17 +7,14 @@ import 'package:learnandplay/main.dart';
 import 'package:learnandplay/widget/slider.dart';
 
 String _topicId="";
-List<Pages> _pageData =[];
-//int _currentPage = 1;
 final _pages= <Widget>[];
 class Slides extends StatefulWidget {
   Slides(List<Pages> pages){
     _pages.clear();
     pages.forEach((element) {
-      _pages.add(SliderPage(title: element.text,description: element.description ,image: "images/lap.png"));
+      _pages.add(SliderPage(title: element.text,description: element.description ,image: "images/"+ element.pageImage, sourceType: element.sourceType,));
     });
-    //_topicId=id;
-    //_currentPage=2;
+
   }
 
   @override
@@ -26,72 +23,14 @@ class Slides extends StatefulWidget {
 }
 
 class _SlidesState extends State<Slides> {
-  int _currentPage = 2;
+  int _currentPage = 0;
   PageController _controller = PageController();
-  //final _pages= <Widget>[
-   // for (int i = 0; i < 10; i++)
-   //   SliderPage(title: "Keep"+ i.toString(),description: "desc"+i.toString(),image: "images/lap.png"),
-
-  //];
-
 
   @override
   void initState() {
     super.initState();
-   // getData();
-    _controller = PageController(initialPage: 2);
+    _controller = PageController(initialPage: 0);
   }
-
-  void getData() {
-    List<Pages> pages=[];
-   pagesRef
-        .orderByChild("topicId")
-        .equalTo(_topicId)
-        .once()
-        .then((DataSnapshot snapshot){
-      // print(snapshot.value);
-      // print(snapshot.key);
-      snapshot.value.forEach((key,values) {
-
-        Pages page= new Pages(id: key
-            , text: values["text"]
-            , description: values["description"]
-            , sourceType: values["sourceType"]
-            , pageImage: values["pageImage"]
-            , isActive:  values["IsActive"]=="true"
-            , order: int.parse(values["Order"]));
-
-
-        //print(values);
-      });
-
-    }).catchError((errMsg){
-      displayToastMessage("Error"+errMsg, context);
-    });
-  }
-
-  // List<Widget> _pages = [
-  //   SliderPage(
-  //       title: "Keep",
-  //       description:
-  //           "Accept cryptocurrencies and digital assets, keep thern here, or send to orthers",
-  //       image: "assets/1.svg"),
-  //   SliderPage(
-  //       title: "Buy",
-  //       description:
-  //           "Buy Bitcoin and cryptocurrencies with VISA and MasterVard right in the App",
-  //       image: "assets/2.svg"),
-  //   SliderPage(
-  //       title: "Sell",
-  //       description:
-  //           "Sell your Bitcoin cryptocurrencies or Change with orthres digital assets or flat money",
-  //       image: "assets/3.svg"),
-  //   SliderPage(
-  //       title: "Trade",
-  //       description:
-  //       "Trade your Bitcoin cryptocurrencies or Change with orthres digital assets or flat money",
-  //       image: "assets/3.svg"),
-  // ];
 
   _onchanged(int index) {
     setState(() {

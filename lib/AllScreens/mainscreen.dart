@@ -84,12 +84,7 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                   var pages= getPages(topic.id);
-                                    // Navigator.pushAndRemoveUntil(context,
-                                    //   MaterialPageRoute(builder: (BuildContext context) => Slides(topic.id)),
-                                    //   ModalRoute.withName('/'),);
-
-                                  },
+                                   getPages(topic.id);},
                                 ),
                                 SizedBox(
                                   height: 5,
@@ -130,37 +125,18 @@ class _MainScreenState extends State<MainScreen> {
                       ],
                     ),
                   ));
-              // return Card(
-              //   child: ListTile(
-              //     title: Text(topic.title),
-              //     trailing: Icon(Icons.arrow_forward_rounded),
-              //   ),
-              // );
             }
         )
     );
   }
 
-  Pages convertData(String key, values){
-        return new Pages(id: key
-        , text: values["text"]
-        , description: values["description"]
-        , sourceType: values["sourceType"]
-        , pageImage: values["pageImage"]
-        , isActive: values["isActive"]
-        , order: values["order"]);
-  }
-
   void getPages(String topicId) {
-    List<Pages> pages=[];
-    pagesRef
+       pagesRef
         .orderByChild("topicId")
         .equalTo(topicId)
         .once()
         .then((DataSnapshot snapshot){
-      // print(snapshot.value);
-      // print(snapshot.key);
-      snapshot.value.forEach((key,values) {
+        snapshot.value.forEach((key,values) {
 
         Pages page= new Pages(id: key
             , text: values["text"]
@@ -171,13 +147,10 @@ class _MainScreenState extends State<MainScreen> {
             , order: int.parse(values["Order"]));
 
         _pages.add(page);
-
-        //print(values);
       });
       Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (BuildContext context) => Slides(_pages)),
         ModalRoute.withName('/'),);
-       //return pages;
     });
   }
 
@@ -188,33 +161,15 @@ class _MainScreenState extends State<MainScreen> {
       print(snapshot.value);
       print(snapshot.key);
       snapshot.value.forEach((key,values) {
-      //  pg.clear();
-      //  Map<String, Pages> data = new Map<String, Pages>.from(values["pages"]);
-       // var xxx=data.map((key, value) => MapEntry(key,convertData(key,values)));
-        // data.forEach((key, values) {
-        //  pg.add( new Pages(id: key
-        //       , text: values["text"]
-        //       , description: values["description"]
-        //       , sourceType: values["sourceType"]
-        //       , pageImage: values["pageImage"]id
-        //       , isActive:  values["IsActive"]=="true"
-        //       , order: int.parse(values["Order"])));
-        //
-        // });
-
-        Topics topic=new Topics(
+           Topics topic=new Topics(
             id: key,
             title: values['title'],
             duration: values["duration"],
-            icon: values["icon"],
-            pages: pg);
+            icon: values["icon"]);
 
          setState(() {
            topics.add(topic);
          });
-
-
-        //print(values);
       });
       setState(() {
         _topics=topics;

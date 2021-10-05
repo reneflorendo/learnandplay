@@ -15,45 +15,8 @@ class LoginScreen extends StatelessWidget {
   TextEditingController emailTextEditingController= TextEditingController();
   TextEditingController passwordTextEditingController= TextEditingController();
 
-
-
   @override
   Widget build(BuildContext context) {
-    // Map pageMap={
-    //   "topicId":"-MkuV1UjWaOgY8PQii8-",
-    //   "text":"About List",
-    //   "description": "List<T> class represents the list of objects which can be accessed by index. It comes under the System.Collection.Generic namespace.",
-    //   "pageImage":"",
-    //   "sourceType":"",
-    //   "Order":"1",
-    //   "IsActive":"1",
-    // };
-    //
-    // pagesRef.push().set(pageMap);
-   // getData(context);
-
-    // topicsRef.once().then(( DataSnapshot dataSnapshot){
-    //   topics.clear();
-    //   var keys = dataSnapshot.value.keys;
-    //   var values = dataSnapshot.value;
-    //   for(var key in keys)
-    //     {
-    //       var pages= values[key]["pages"];
-    //
-    //
-    //
-    //       Topics topic=new Topics(
-    //           id: dataSnapshot.key,
-    //           title: values[key]['title'],
-    //           duration: values[key]["duration"],
-    //           icon: values[key]["icon"],
-    //           pages: null);
-    //
-    //       topics.add(topic);
-    //     }
-    // }).catchError((errMsg){
-    //   displayToastMessage("Error"+errMsg, context);
-    // });
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -165,71 +128,15 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-   // void getData(BuildContext context) async{
-   //   topicsRef.once().then((DataSnapshot snapshot){
-   //     print(snapshot.value);
-   //     print(snapshot.key);
-   //     snapshot.value.forEach((key,values) {
-   //
-   //       Map<String, dynamic> data = new Map<String, dynamic>.from(values["pages"]);
-   //       data.forEach((key, values) {
-   //          Pages page= new Pages(id: key
-   //              , text: values["text"]
-   //              , description: values["description"]
-   //              , sourceType: values["sourceType"]
-   //              , pageImage: values["pageImage"]
-   //              , isActive:  values["IsActive"]=="true"
-   //              , order: int.parse(values["Order"]));
-   //          _pages.add(page);
-   //       });
-   //
-   //       Topics topic=new Topics(
-   //           id: key,
-   //           title: values['title'],
-   //           duration: values["duration"],
-   //           icon: values["icon"],
-   //           pages: _pages);
-   //
-   //       _topics.add(topic);
-   //       //print(values);
-   //     });
-   //
-   //     var data =_topics;
-   //   }).catchError((errMsg){
-   //       displayToastMessage("Error"+errMsg, context);
-   //     });
-   // }
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    emailTextEditingController.dispose();
+    passwordTextEditingController.dispose();
+  }
   final FirebaseAuth _firebaseAuth=FirebaseAuth.instance;
 
   void loginAndAuthenticateUser(BuildContext context) async{
-
-    // Map pageMap={
-    //   "topicId":"-MkuP45mdhSr6d2dxwwt",
-    //   "text":"About Array",
-    //   "description": "An array is a group of like-typed variables that are referred to by a common name",
-    //   "pageImage":"array.png",
-    //   "sourceType":"1",
-    //   "Order":"1",
-    //   "IsActive":"1",
-    // };
-    //
-    // pagesRef.push().set(pageMap);
-    //topicsRef.child("-MkuW_3qta9F_S2lKtxx").child("pages").push().set(pageMap);
-    // Map topicDataMap={
-    //   "title":"Queue",
-    //   "duration":"15 Minutes",
-    //   "icon":"queue.png"
-    // };
-
-    // var ref=topicsRef.push();
-    // var uniqueKey= ref.key;
-    // ref.set(topicDataMap) .then((_) {
-    //     topicsRef.child(uniqueKey).child("pages").push().set(pageMap);
-    //   return true;
-    // }).catchError((onError) {
-    //   return false;
-    // });
-
     final User? firebaseUser=( await _firebaseAuth.signInWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text).catchError((errMsg){

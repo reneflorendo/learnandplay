@@ -190,14 +190,14 @@ class RegistrationScreen extends StatelessWidget {
       };
 
       usersRef.child(firebaseUser.uid).set(userDataMap);
-      displayToastMessage("Congratulations has been created!", context);
+      displayToastMessage("Congratulations! Your account has been registered!", context);
       Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
         ModalRoute.withName('/'),);
     }
     else
     {
-      displayToastMessage("User has not been created.", context);
+      displayToastMessage("User has not created!", context);
     }
   }
 }
