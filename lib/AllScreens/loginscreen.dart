@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/registrationScreen.dart';
 import 'package:learnandplay/Models/Pages.dart';
 import 'package:learnandplay/Models/Topics.dart';
-
+import 'package:learnandplay/Models/Users.dart';
+import 'package:learnandplay/config.dart';
 import '../main.dart';
 import 'mainscreen.dart';
+import 'dart:io';
 
 class LoginScreen extends StatelessWidget {
   static const String idScreen = "loginScreen";
@@ -137,35 +139,46 @@ class LoginScreen extends StatelessWidget {
   final FirebaseAuth _firebaseAuth=FirebaseAuth.instance;
 
   void loginAndAuthenticateUser(BuildContext context) async{
-    final User? firebaseUser=( await _firebaseAuth.signInWithEmailAndPassword(
-        email: emailTextEditingController.text,
-        password: passwordTextEditingController.text).catchError((errMsg){
-      displayToastMessage("Error"+errMsg, context);
-    })).user;
 
-    if (firebaseUser!=null)
-    {
-      usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap){
-        if(snap.value !=null)
-        {
-          Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
-            ModalRoute.withName('/'),);
-          displayToastMessage("You are logged in!.", context);
-        }
-        else
-        {
-          _firebaseAuth.signOut();
-          displayToastMessage("User not exists! Please register.", context);
-        }
-      });
+    try {
+      final User? firebaseUser = (await _firebaseAuth
+          .signInWithEmailAndPassword(
+          email: emailTextEditingController.text,
+          password: passwordTextEditingController.text)
+
+      //     .catchError((errMsg) {
+      //   displayToastMessage("Error" + errMsg, context);
+      // })
+      ).user;
+
+      if (firebaseUser != null) {
+        usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap) {
+          if (snap.value != null) {
+            userCurrentInfo = Users.fromSnapshot(snap);
+            Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => MainScreen()),
+              ModalRoute.withName('/'),);
+            displayToastMessage("You are logged in!.", context);
+          }
+          else {
+            _firebaseAuth.signOut();
+            displayToastMessage("User not exists! Please register.", context);
+          }
+        });
+      }
+      else {
+        _firebaseAuth.signOut();
+        displayToastMessage("Cannot sign in!", context);
+      }
+    }
+      // on SocketException catch(errMsg){
+      //   displayToastMessage("Internet connection not available!", context);
+      // }
+      catch(errMsg){
+       displayToastMessage("Error" + errMsg.toString(), context);
+
+      }
 
     }
-    else
-    {
-      _firebaseAuth.signOut();
-      displayToastMessage("Cannot sign in!", context);
-    }
-
-  }
 }

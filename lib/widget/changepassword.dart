@@ -9,6 +9,8 @@ class ChangePassword extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Colors.blue,
         )
+        ,
+
     );
   }
 }

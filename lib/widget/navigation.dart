@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/loginscreen.dart';
+import 'package:learnandplay/config.dart';
+import 'package:learnandplay/main.dart';
 import 'package:learnandplay/widget/changepassword.dart';
 import 'package:learnandplay/widget/profile.dart';
 import 'package:learnandplay/widget/topicscomplete.dart';
@@ -12,8 +14,8 @@ class Navigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final name ="Rene Florendo";
-    final email= "reneflorendo@gmail.com";
+    final name =userCurrentInfo.name;
+    final email= userCurrentInfo.email;
     final photo= "https://firebasestorage.googleapis.com/v0/b/learnandplay-bfa40.appspot.com/o/user_icon.png?alt=media&token=d1ea60d2-2bd0-46f5-b49c-56438c2dae14";
 
     return Drawer(
@@ -54,6 +56,7 @@ class Navigation extends StatelessWidget {
                 text:"Log out",
                 icon:Icons.logout,
                 onClicked: ()=> selectedItem(context, 3)
+
             ),
           ],
         ) ,
@@ -93,10 +96,19 @@ class Navigation extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => TopicsComplete()));
         break;
       case 3:
-        _firebaseAuth.signOut();
+        //_firebaseAuth.signOut();
+        database.setPersistenceEnabled(false);
+        database.setPersistenceCacheSizeBytes(0);
+        Navigator.of(context).pop();
+        signOut(context);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
-    }
+            }
   }
+
+  void signOut(BuildContext context)async {
+  Navigator.of(context).pop();
+  await _firebaseAuth.signOut();
+}
 
   Widget buildHeader(
   {

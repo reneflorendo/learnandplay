@@ -12,6 +12,7 @@ class RegistrationScreen extends StatelessWidget {
   TextEditingController emailTextEditingController= TextEditingController();
   TextEditingController confirmPasswordTextEditingController= TextEditingController();
   TextEditingController passwordTextEditingController= TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,7 +187,8 @@ class RegistrationScreen extends StatelessWidget {
       Map userDataMap={
         "name":nameTextEditingController.text.trim(),
         "email":emailTextEditingController.text.trim(),
-        "password":passwordTextEditingController.text.trim()
+        "password":passwordTextEditingController.text.trim(),
+        "year":"1st"
       };
 
       usersRef.child(firebaseUser.uid).set(userDataMap);

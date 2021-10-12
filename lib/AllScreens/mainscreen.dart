@@ -1,9 +1,17 @@
+// ignore_for_file: unused_label
+
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:learnandplay/AllScreens/arraygame.dart';
+import 'package:learnandplay/AllScreens/listgame.dart';
 import 'package:learnandplay/AllScreens/registrationscreen.dart';
 import 'package:learnandplay/AllScreens/slides.dart';
 import 'package:learnandplay/Models/Pages.dart';
 import 'package:learnandplay/Models/Topics.dart';
+import 'package:learnandplay/Models/UserTopics.dart';
+import 'package:learnandplay/config.dart';
 import 'package:learnandplay/main.dart';
 import 'package:learnandplay/widget/navigation.dart';
 
@@ -84,14 +92,16 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                   getPages(topic.id);},
+                                    getCurrentTopicPage(userCurrentInfo.id, topic.id,topic.title);
+
+                                   },
                                 ),
                                 SizedBox(
                                   height: 5,
                                   width: 3,
                                 ),
                                 RaisedButton(
-                                  color:Colors.blue,
+                                  color: topic.gameId >0? Colors.blue :Colors.grey,
                                   textColor: Colors.white,
                                   child: Container(
                                     height: 20.0,
@@ -106,9 +116,9 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                    // Navigator.pushAndRemoveUntil(context,
-                                    //   MaterialPageRoute(builder: (BuildContext context) => Landing()),
-                                    //   ModalRoute.withName('/'),);
+                                    if (topic.gameId >0) {
+                                      getGame(context, topic.gameId);
+                                    }
 
                                   },
                                 ),
@@ -130,7 +140,78 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void getPages(String topicId) {
+  void getGame(BuildContext context, int gameId){
+
+    //Navigator.of(context).pop();
+
+    switch (gameId){
+      case 1:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ArrayGame()));
+        break;
+      case 2:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListGame()));
+        break;
+      default: {
+       displayToastMessage("Game not available yet!", context);
+      }
+      break;
+
+    }
+  }
+
+  int getCurrentTopicPage(String? userId, String topicId, String topic)
+  {
+    final userTopicId = userId.toString()+"_"+ topicId;
+    final filterField="userId_topicId";
+    int currentPage =0;
+    String topicKey="";
+      Map<String, dynamic> studentTopic={
+      "userTopicId":userTopicId,
+      "topic":topic,
+      "currentPage":0,
+      "status":"In Progress",
+    };
+
+    studentTopicsRef
+        .orderByChild("userTopicId")
+        .equalTo(userTopicId)
+        .once().then((DataSnapshot dataSnapshot) => {
+
+          if (dataSnapshot.value!=null)
+            {
+              dataSnapshot.value.forEach((key,values) {
+
+                currentPage=values["currentPage"];
+                topicKey=key;
+                 // userTopic= new UserTopics(id: key,
+                 //    userTopicId: values["userTopicId"],
+                 //    topic: values["topic"],
+                 //    currentPage: values["currentPage"],
+                 //    status: values["status"]);
+
+              }),
+
+                  setState(() {
+                        currentPage = currentPage;
+                        getPages(topicId,currentPage,topicKey);
+                      }),
+
+            }
+          else{
+
+            topicKey =studentTopicsRef.push().key,
+            studentTopicsRef.child(topicKey).set(studentTopic),
+            setState(() {
+                  currentPage=0;
+                  getPages(topicId, currentPage,topicKey );
+            }),
+
+          }
+   });
+
+    return currentPage;
+  }
+  void getPages(String topicId, int index, String topicKey) {
        pagesRef
         .orderByChild("topicId")
         .equalTo(topicId)
@@ -144,12 +225,14 @@ class _MainScreenState extends State<MainScreen> {
             , sourceType: values["sourceType"]
             , pageImage: values["pageImage"]
             , isActive:  values["IsActive"]=="true"
-            , order: int.parse(values["Order"]));
+            , topicId:  values["topicId"]
+            , order: int.parse(values["Order"])
+        );
 
         _pages.add(page);
       });
       Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages)),
+        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages, index,topicId,topicKey)),
         ModalRoute.withName('/'),);
     });
   }
@@ -165,7 +248,8 @@ class _MainScreenState extends State<MainScreen> {
             id: key,
             title: values['title'],
             duration: values["duration"],
-            icon: values["icon"]);
+            icon: values["icon"],
+            gameId:values['gameId'] );
 
          setState(() {
            topics.add(topic);

@@ -7,9 +7,14 @@ import 'package:learnandplay/main.dart';
 import 'package:learnandplay/widget/slider.dart';
 
 String _topicId="";
+String _topicKey="";
 final _pages= <Widget>[];
+int _currentPage = 0;
 class Slides extends StatefulWidget {
-  Slides(List<Pages> pages){
+  Slides(List<Pages> pages, index, topicId, topicKey){
+    _topicId=topicId;
+    _topicKey =topicKey;
+    _currentPage=index;
     _pages.clear();
     pages.forEach((element) {
       _pages.add(SliderPage(title: element.text,description: element.description ,image: "images/"+ element.pageImage, sourceType: element.sourceType,));
@@ -23,16 +28,22 @@ class Slides extends StatefulWidget {
 }
 
 class _SlidesState extends State<Slides> {
-  int _currentPage = 0;
+
   PageController _controller = PageController();
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: 0);
+    _controller = PageController(initialPage: _currentPage);
   }
 
   _onchanged(int index) {
+
+    Map<String, dynamic> studentTopicMap={
+      "currentPage":index,
+    };
+    studentTopicsRef.child(_topicKey).update(studentTopicMap);
+
     setState(() {
       _currentPage = index;
     });

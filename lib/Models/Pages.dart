@@ -10,8 +10,9 @@ class Pages
   late String pageImage;
   late bool isActive;
   late int order;
+  late String topicId;
 
-  Pages({required this.id, required this.text, required this.description, required this.sourceType,required this.pageImage,required this.isActive,required this.order,});
+  Pages({required this.id, required this.text, required this.description, required this.sourceType,required this.pageImage,required this.isActive,required this.order, required this.topicId});
 
   Pages.fromSnapshot(DataSnapshot dataSnapshot)
   {
@@ -22,5 +23,6 @@ class Pages
     pageImage = dataSnapshot.value["pageImage"];
     isActive = dataSnapshot.value["isActive"];
     order = dataSnapshot.value["order"];
+    topicId = dataSnapshot.value["topicId"];
   }
 }

@@ -8,8 +8,9 @@ class Topics
   late String title;
   late String duration;
   late String icon;
+  late int gameId;
  // late List<Pages> pages;
-  Topics({required this.id, required this.title, required this.duration, required this.icon});
+  Topics({required this.id, required this.title, required this.duration, required this.icon, required this.gameId});
 
   Topics.fromSnapshot(DataSnapshot dataSnapshot)
   {
@@ -17,5 +18,6 @@ class Topics
     title = dataSnapshot.value["title"];
     duration = dataSnapshot.value["duration"];
     icon = dataSnapshot.value["icon"];
+    gameId= dataSnapshot.value["gameId"];
   }
 }

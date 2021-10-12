@@ -7,15 +7,15 @@ class Users
   late String? id;
   late String email;
   late String name;
-  late String phone;
+  late String year;
 
-  Users({required this.id, required this.email, required this.name, required this.phone,});
+  Users({required this.id, required this.email, required this.name, required this.year,});
 
   Users.fromSnapshot(DataSnapshot dataSnapshot)
   {
     id = dataSnapshot.key;
     email = dataSnapshot.value["email"];
     name = dataSnapshot.value["name"];
-    phone = dataSnapshot.value["phone"];
+    year = dataSnapshot.value["year"]??"1st";
   }
 }
