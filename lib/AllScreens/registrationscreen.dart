@@ -175,6 +175,8 @@ class RegistrationScreen extends StatelessWidget {
 
   void registerNewUser(BuildContext context) async
   {
+
+
     final User? firebaseUser=( await _firebaseAuth.createUserWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text).catchError((errMsg){
@@ -188,13 +190,15 @@ class RegistrationScreen extends StatelessWidget {
         "name":nameTextEditingController.text.trim(),
         "email":emailTextEditingController.text.trim(),
         "password":passwordTextEditingController.text.trim(),
-        "year":"1st"
+        "year":"1st",
+        "isActive":false,
+        "photo":"user_icon.png"
       };
 
       usersRef.child(firebaseUser.uid).set(userDataMap);
       displayToastMessage("Congratulations! Your account has been registered!", context);
       Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
+        MaterialPageRoute(builder: (BuildContext context) => LoginScreen()),
         ModalRoute.withName('/'),);
     }
     else

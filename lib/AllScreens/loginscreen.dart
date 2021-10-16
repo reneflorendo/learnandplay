@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/registrationScreen.dart';
+import 'package:learnandplay/AllScreens/resetpassword.dart';
 import 'package:learnandplay/Models/Pages.dart';
 import 'package:learnandplay/Models/Topics.dart';
 import 'package:learnandplay/Models/Users.dart';
@@ -108,21 +109,40 @@ class LoginScreen extends StatelessWidget {
                           }
 
                         },
+                      ),
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          SizedBox(height: 20, width: 5,),
+                          FlatButton(
+                            color:Colors.blue,
+                            textColor: Colors.white,
+                            child: Text("Forgot Password?"),
+                            onPressed: (){
+                              Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (BuildContext context) => ResetPassword()),
+                                ModalRoute.withName('/'),);
+                            },
+                          ),
+                          SizedBox(height: 20, width: 5,),
+                          FlatButton(
+                            color:Colors.blue,
+                            textColor: Colors.white,
+                            child: Text("Sign Up"),
+                            onPressed: (){
+                              Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (BuildContext context) => RegistrationScreen()),
+                                ModalRoute.withName('/'),);
+                            },
+                          ),
+                        ],
                       )
+
 
 
                     ],
                   )
               ),
-              FlatButton(
-                onPressed: (){
-                  Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (BuildContext context) => RegistrationScreen()),
-                    ModalRoute.withName('/'),);
-                },
-                child: Text(
-                  "Do not have an Account? Register Here",
-                ),
-              )
+
             ],
           ),
         ),
@@ -141,7 +161,7 @@ class LoginScreen extends StatelessWidget {
   void loginAndAuthenticateUser(BuildContext context) async{
 
     try {
-      final User? firebaseUser = (await _firebaseAuth
+      final User firebaseUser = (await _firebaseAuth
           .signInWithEmailAndPassword(
           email: emailTextEditingController.text,
           password: passwordTextEditingController.text)
@@ -149,7 +169,7 @@ class LoginScreen extends StatelessWidget {
       //     .catchError((errMsg) {
       //   displayToastMessage("Error" + errMsg, context);
       // })
-      ).user;
+      ).user!;
 
       if (firebaseUser != null) {
         usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap) {

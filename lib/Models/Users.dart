@@ -8,8 +8,10 @@ class Users
   late String email;
   late String name;
   late String year;
+  late bool isActive;
+  late String photo;
 
-  Users({required this.id, required this.email, required this.name, required this.year,});
+  Users({required this.id, required this.email, required this.name, required this.year, required this.isActive, required this.photo});
 
   Users.fromSnapshot(DataSnapshot dataSnapshot)
   {
@@ -17,5 +19,7 @@ class Users
     email = dataSnapshot.value["email"];
     name = dataSnapshot.value["name"];
     year = dataSnapshot.value["year"]??"1st";
+    isActive = dataSnapshot.value["isActive"];
+    photo = dataSnapshot.value["photo"];
   }
 }

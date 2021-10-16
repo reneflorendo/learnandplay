@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-class TopicsComplete extends StatelessWidget {
+class Topics extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

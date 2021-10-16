@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,8 @@ import 'package:learnandplay/AllScreens/registrationscreen.dart';
 import 'package:learnandplay/Models/Users.dart';
 import 'package:learnandplay/config.dart';
 import 'package:learnandplay/main.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 class Profile extends StatefulWidget {
 
 
@@ -23,7 +26,9 @@ class _ProfileState extends State<Profile> {
   String dropdownValue="1st";
   User? firebaseUser;
   String userId="";
-  File? image;
+  File? _image;
+  String photoName="";
+  String _url="";
   final listItem = [
     "1st",
     "2nd",
@@ -33,7 +38,8 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
-    getProfile();
+
+       getProfile();
     // TODO: implement initState
     super.initState();
   }
@@ -61,14 +67,18 @@ class _ProfileState extends State<Profile> {
 
                       Stack(
                         children: <Widget>[
-                          ClipOval(
-                            child:Image.file(
-                              (image==null) ? File('/images/logo.png'):image!,
-                              width:160,
-                              height: 160,
-                              fit:BoxFit.cover,
+                           ClipOval(
+                            child: new SizedBox(
+                              width: 180.0,
+                              height: 180.0,
+                              child: (_image!=null)?Image.file(
+                                _image!,
+                                fit: BoxFit.fill,
+                              ):Image.network(
+                                _url,//"https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+                                fit: BoxFit.fill,
+                              ),
                             ),
-
                           ),
                           Positioned(
                             bottom: 20,
@@ -76,7 +86,7 @@ class _ProfileState extends State<Profile> {
                             child:InkWell(
                               onTap: (){
                                 showModalBottomSheet(context: context
-                                    , builder: ((builder)=> bottomSheet())
+                                    , builder: ((builder)=> bottomSheet(context))
                                 );
                               },
                               child: Icon(
@@ -182,6 +192,7 @@ class _ProfileState extends State<Profile> {
                           }
 
                           else{
+                            uploadPic(context);
                             updateUser(context);
                           }
 
@@ -200,7 +211,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Widget bottomSheet()
+  Widget bottomSheet(BuildContext context)
   {
     return Container(
       height: 100,
@@ -235,19 +246,54 @@ class _ProfileState extends State<Profile> {
 
     );
   }
+
+  Future uploadPic(BuildContext context) async{
+    String fileName = basename(_image!.path);
+    Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+    TaskSnapshot taskSnapshot=await uploadTask.whenComplete(() => {
+      setState(() {
+      print("Profile Picture uploaded");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+      })
+    });
+
+  }
+
   pickImage(ImageSource source) async
   {
     try {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
-      final imageTemporary = File(image.path);
-
+      final permanentImage= await saveImagePermanently(image.path);
       setState(() {
-        this.image = imageTemporary;
+        this._image = permanentImage;
+
       });
     } on PlatformException catch (e){
     }
   }
+
+  Future<File> saveImagePermanently(String imagePath) async{
+    final directory = await getApplicationDocumentsDirectory();
+    photoName =basename(imagePath);
+    final image=File('${directory.path}/$photoName');
+    return File(imagePath).copy(image.path);
+
+  }
+
+  // File getUserImage(String photo)
+  //  {
+  //     _image= getImage(photo) as File;
+  //    return  _image;
+  //   //return image;
+  // }
+  // Future<File> getImage(String image) async{
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final image=File('${directory.path}/$photoName');
+  //   final photo=File(image.path) ;
+  //   return photo;
+  // }
   //
   void updateUser(BuildContext context) async
   {
@@ -258,13 +304,20 @@ class _ProfileState extends State<Profile> {
       Map<String, dynamic> userDataMap={
         "name":nameTextEditingController.text.trim(),
         "year":dropdownValue,
+        "photo":photoName,
       };
-
-    await  usersRef.child(uid).update(userDataMap);
-      displayToastMessage("Your account has been updated!", context);
+     // Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(userCurrentInfo.photo);
+    await  usersRef.child(uid).update(userDataMap).then((value) async => {
+          // await firebaseStorageRef.getDownloadURL().then((value) => {
+          // _url=value
+          // }),
+      userCurrentInfo.photo=photoName,
+      displayToastMessage("Your account has been updated!", context),
       Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
-        ModalRoute.withName('/'),);
+      MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
+      ModalRoute.withName('/'),)
+    });
+
     }
     else
     {
@@ -278,14 +331,21 @@ class _ProfileState extends State<Profile> {
     DatabaseReference reference = FirebaseDatabase.instance.reference().child("users").child(userId);
 
     await reference.once().then((DataSnapshot dataSnapShot)
-    {
+    async {
       if(dataSnapShot.value != null)
       {
+        Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(userCurrentInfo.photo);
         userCurrentInfo = Users.fromSnapshot(dataSnapShot);
         emailTextEditingController.value= TextEditingValue(text:userCurrentInfo.email);
         nameTextEditingController.value= TextEditingValue(text:userCurrentInfo.name);
+        photoName=userCurrentInfo.photo;
 
+        await firebaseStorageRef.getDownloadURL().then((value) => {
+          _url=value
+        });
+        //image= getImage(photoName) as File;
         setState(() {
+
           dropdownValue= userCurrentInfo.year;
         });
 

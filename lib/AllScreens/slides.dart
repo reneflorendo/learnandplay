@@ -98,6 +98,12 @@ class _SlidesState extends State<Slides> {
                   child: (_currentPage == (_pages.length - 1))
                       ? FlatButton(
                     onPressed: (){
+
+                      Map<String, dynamic> studentTopicMap={
+                        "status":"Complete",
+                      };
+                      studentTopicsRef.child(_topicKey).update(studentTopicMap);
+
                       Navigator.pushAndRemoveUntil(context,
                         MaterialPageRoute(builder: (BuildContext context) => MainScreen()),
                         ModalRoute.withName('/'),);
