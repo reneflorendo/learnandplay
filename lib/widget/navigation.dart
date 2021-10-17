@@ -71,13 +71,7 @@ class _NavigationState extends State<Navigation> {
               icon:Icons.vpn_key,
               onClicked: ()=> selectedItem(context, 1)
             ),
-            const SizedBox(height:20),
-            buildMenuItem(
-              text:"Topics",
-              icon:Icons.book,
-              onClicked: ()=> selectedItem(context, 2)
-            ),
-            const SizedBox(height:20),
+             const SizedBox(height:20),
             Divider(color: Colors.white70,),
             const SizedBox(height: 20),
             buildMenuItem(

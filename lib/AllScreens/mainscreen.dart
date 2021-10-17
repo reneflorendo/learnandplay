@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
             itemBuilder: (context, index){
               Topics topic= _topics[index];
               return Container(
-                  height: 150,
+                  height: 170,
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20.0)), color: Colors.white, boxShadow: [
                     BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 10.0),
@@ -63,6 +63,10 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                             Text(
                               topic.duration,
+                              style: const TextStyle(fontSize: 17, color: Colors.grey),
+                            ),
+                            Text(
+                                topic.status,
                               style: const TextStyle(fontSize: 17, color: Colors.grey),
                             ),
                             SizedBox(
@@ -139,7 +143,6 @@ class _MainScreenState extends State<MainScreen> {
         )
     );
   }
-
   void getGame(BuildContext context, int gameId){
 
     //Navigator.of(context).pop();
@@ -193,7 +196,7 @@ class _MainScreenState extends State<MainScreen> {
 
                   setState(() {
                         currentPage = currentPage;
-                        getPages(topicId,currentPage,topicKey);
+                        getPages(topicId,currentPage,topicKey,topic);
                       }),
 
             }
@@ -203,7 +206,7 @@ class _MainScreenState extends State<MainScreen> {
             studentTopicsRef.child(topicKey).set(studentTopic),
             setState(() {
                   currentPage=0;
-                  getPages(topicId, currentPage,topicKey );
+                  getPages(topicId, currentPage,topicKey,topic );
             }),
 
           }
@@ -211,7 +214,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return currentPage;
   }
-  void getPages(String topicId, int index, String topicKey) {
+  void getPages(String topicId, int index, String topicKey,topic) {
        pagesRef
         .orderByChild("topicId")
         .equalTo(topicId)
@@ -232,7 +235,7 @@ class _MainScreenState extends State<MainScreen> {
         _pages.add(page);
       });
       Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages, index,topicId,topicKey)),
+        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages, index,topicId,topicKey,topic)),
         ModalRoute.withName('/'),);
     });
   }
@@ -241,15 +244,19 @@ class _MainScreenState extends State<MainScreen> {
     List<Topics> topics=[];
     List<Pages> pg=[];
     await topicsRef.once().then((DataSnapshot snapshot){
-      print(snapshot.value);
-      print(snapshot.key);
-      snapshot.value.forEach((key,values) {
+         snapshot.value.forEach((key,values) async {
            Topics topic=new Topics(
             id: key,
             title: values['title'],
             duration: values["duration"],
             icon: values["icon"],
-            gameId:values['gameId'] );
+            gameId:values['gameId'],
+            status:"",
+           );
+
+           await getStatus(userCurrentInfo.id,topic.id).then((value) => {
+             topic.status=value.toString().length==0?"Not Started":value.toString()
+           });
 
          setState(() {
            topics.add(topic);
@@ -261,5 +268,34 @@ class _MainScreenState extends State<MainScreen> {
     }).catchError((errMsg){
       displayToastMessage("Error"+errMsg, context);
     });
+  }
+
+  Future<String> getStatus(String? userId,String topicId) async
+  {
+    String status="";
+    final userTopicId = userId.toString()+"_"+ topicId;
+    await studentTopicsRef
+        .orderByChild("userTopicId")
+        .equalTo(userTopicId)
+        .once().then((DataSnapshot dataSnapshot) => {
+
+      if (dataSnapshot.value!=null)
+        {
+          dataSnapshot.value.forEach((key,values) {
+
+            status=values["status"];
+
+          }),
+
+          setState(() {
+            status = status;
+
+          }),
+
+        }
+
+    }
+    );
+    return status;
   }
 }

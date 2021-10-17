@@ -17,8 +17,8 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  //database.setPersistenceEnabled(true);
-  //database.setPersistenceCacheSizeBytes(10000000);
+  database.setPersistenceEnabled(true);
+  database.setPersistenceCacheSizeBytes(10000000);
 
   currentFirebaseUser = FirebaseAuth.instance.currentUser;
   runApp(MyApp());

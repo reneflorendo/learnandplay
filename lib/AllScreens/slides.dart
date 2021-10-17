@@ -10,11 +10,13 @@ String _topicId="";
 String _topicKey="";
 final _pages= <Widget>[];
 int _currentPage = 0;
+String _title="";
 class Slides extends StatefulWidget {
-  Slides(List<Pages> pages, index, topicId, topicKey){
+  Slides(List<Pages> pages, index, topicId, topicKey,title){
     _topicId=topicId;
     _topicKey =topicKey;
     _currentPage=index;
+    _title=title;
     _pages.clear();
     pages.forEach((element) {
       _pages.add(SliderPage(title: element.text,description: element.description ,image: "images/"+ element.pageImage, sourceType: element.sourceType,));
@@ -52,6 +54,13 @@ class _SlidesState extends State<Slides> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar:AppBar(
+        title: Text(_title),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
+
       body: Stack(
         children: <Widget>[
           PageView.builder(
