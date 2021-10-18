@@ -215,6 +215,7 @@ class _MainScreenState extends State<MainScreen> {
     return currentPage;
   }
   void getPages(String topicId, int index, String topicKey,topic) {
+        _pages.clear();
        pagesRef
         .orderByChild("topicId")
         .equalTo(topicId)
@@ -234,9 +235,10 @@ class _MainScreenState extends State<MainScreen> {
 
         _pages.add(page);
       });
-      Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (BuildContext context) => Slides(_pages, index,topicId,topicKey,topic)),
-        ModalRoute.withName('/'),);
+      // Navigator.pushAndRemoveUntil(context,
+      //   MaterialPageRoute(builder: (BuildContext context) =>  Slides(_pages, index,topicId,topicKey,topic)),
+      //   ModalRoute.withName('/'),);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  Slides(_pages, index,topicId,topicKey,topic)));
     });
   }
 

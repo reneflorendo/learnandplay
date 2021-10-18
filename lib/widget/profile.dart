@@ -253,8 +253,8 @@ class _ProfileState extends State<Profile> {
     UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
     TaskSnapshot taskSnapshot=await uploadTask.whenComplete(() => {
       setState(() {
-      print("Profile Picture uploaded");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+      //print("Profile Picture uploaded");
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
       })
     });
 
