@@ -156,6 +156,7 @@ class LoginScreen extends StatelessWidget {
     emailTextEditingController.dispose();
     passwordTextEditingController.dispose();
   }
+
   final FirebaseAuth _firebaseAuth=FirebaseAuth.instance;
 
   void loginAndAuthenticateUser(BuildContext context) async{
@@ -175,11 +176,16 @@ class LoginScreen extends StatelessWidget {
         usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap) {
           if (snap.value != null) {
             userCurrentInfo = Users.fromSnapshot(snap);
-            Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => MainScreen()),
-              ModalRoute.withName('/'),);
-            displayToastMessage("You are logged in!.", context);
+            if (firebaseUser.emailVerified && userCurrentInfo.isActive) {
+              Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => MainScreen()),
+                ModalRoute.withName('/'),);
+              displayToastMessage("You are logged in!.", context);
+            }
+            else{
+              displayToastMessage("Your account "+ userCurrentInfo.email +" is not activated yet!", context);
+            }
           }
           else {
             _firebaseAuth.signOut();

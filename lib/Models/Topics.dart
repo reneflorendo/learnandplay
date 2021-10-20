@@ -10,8 +10,9 @@ class Topics
   late String icon;
   late int gameId;
   late String status;
+  late String? url;
  // late List<Pages> pages;
-  Topics({required this.id, required this.title, required this.duration, required this.icon, required this.gameId, required this.status});
+  Topics({required this.id, required this.title, required this.duration, required this.icon, required this.gameId, required this.status, this.url=""});
 
   Topics.fromSnapshot(DataSnapshot dataSnapshot)
   {

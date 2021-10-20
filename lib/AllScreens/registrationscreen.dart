@@ -6,12 +6,26 @@ import 'package:learnandplay/AllScreens/loginscreen.dart';
 import 'package:learnandplay/AllScreens/mainscreen.dart';
 import 'package:learnandplay/main.dart';
 
-class RegistrationScreen extends StatelessWidget {
+class RegistrationScreen extends StatefulWidget {
+  static const String idScreen = "registrationScreen";
+  @override
+  _RegistrationScreenState createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
   static const String idScreen = "registerScreen";
   TextEditingController nameTextEditingController= TextEditingController();
   TextEditingController emailTextEditingController= TextEditingController();
-  TextEditingController confirmPasswordTextEditingController= TextEditingController();
-  TextEditingController passwordTextEditingController= TextEditingController();
+
+  String dropdownValue="1st";
+  final listItem = [
+    "1st",
+    "2nd",
+    "3rd",
+    "4th"
+  ];
+  //TextEditingController confirmPasswordTextEditingController= TextEditingController();
+  //TextEditingController passwordTextEditingController= TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -71,43 +85,38 @@ class RegistrationScreen extends StatelessWidget {
                             fontSize: 14.0
                         ),
                       ),
-
-                      SizedBox(height:1.0,),
-                      TextField(
-                        controller: passwordTextEditingController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          labelStyle: TextStyle(
-                              fontSize: 14.0
-                          ),
-                          hintStyle: TextStyle(
-                              color:Colors.grey,
-                              fontSize: 10.0
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontSize: 14.0
-                        ),
-                      ),
-                      SizedBox(height:1.0,),
-                      TextField(
-                        controller: confirmPasswordTextEditingController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Confirm Password",
-                          labelStyle: TextStyle(
-                              fontSize: 14.0
-                          ),
-                          hintStyle: TextStyle(
-                              color:Colors.grey,
-                              fontSize: 10.0
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontSize: 14.0
-                        ),
-                      ),
+                      SizedBox(height:20.0,),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Year',
+                              style: TextStyle(fontSize: 14.0),
+                            ),
+                            DropdownButton<String>(
+                              value: dropdownValue,
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_downward),
+                              iconSize: 24,
+                              elevation: 16,
+                              style: const TextStyle(color: Colors.deepPurple),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.deepPurpleAccent,
+                              ),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownValue = newValue!;
+                                });
+                              },
+                              items: listItem
+                                  .map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            )]),
 
                       SizedBox(height: 10.0),
                       RaisedButton(
@@ -132,17 +141,17 @@ class RegistrationScreen extends StatelessWidget {
                           }
                           else if (!emailTextEditingController.text.contains("@"))
                           {
-                            displayToastMessage("Invalid EMail", context);
+                            displayToastMessage("Invalid Email", context);
                           }
-                          else if (passwordTextEditingController.text.length < 6)
-                          {
-                            displayToastMessage("Password is at least 6 characters", context);
-
-                          }
-                          else if (passwordTextEditingController.text!=confirmPasswordTextEditingController.text)
-                          {
-                            displayToastMessage("Password not match!", context);
-                          }
+                          // else if (passwordTextEditingController.text.length < 6)
+                          // {
+                          //   displayToastMessage("Password is at least 6 characters", context);
+                          //
+                          // }
+                          // else if (passwordTextEditingController.text!=confirmPasswordTextEditingController.text)
+                          // {
+                          //   displayToastMessage("Password not match!", context);
+                          // }
                           else{
                             registerNewUser(context);
                           }
@@ -175,11 +184,11 @@ class RegistrationScreen extends StatelessWidget {
 
   void registerNewUser(BuildContext context) async
   {
-
+    String tempPassword="!Q@W#E%T^Y&U*I(O)Pzxc";
 
     final User? firebaseUser=( await _firebaseAuth.createUserWithEmailAndPassword(
         email: emailTextEditingController.text,
-        password: passwordTextEditingController.text).catchError((errMsg){
+        password: tempPassword).catchError((errMsg){
       displayToastMessage("Error"+errMsg, context);
     })).user;
 
@@ -189,8 +198,8 @@ class RegistrationScreen extends StatelessWidget {
       Map userDataMap={
         "name":nameTextEditingController.text.trim(),
         "email":emailTextEditingController.text.trim(),
-        "password":passwordTextEditingController.text.trim(),
-        "year":"1st",
+        "password":tempPassword,
+        "year":dropdownValue,
         "isActive":false,
         "photo":"user_icon.png"
       };

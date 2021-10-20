@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/arraygame.dart';
 import 'package:learnandplay/AllScreens/listgame.dart';
@@ -87,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
                                     height: 20.0,
                                     child: Center(
                                       child: Text(
-                                        "Learn",
+                                        (topic.status=="Complete") ?"Retake" :"Learn",
                                         style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
                                       ) ,
                                     ),
@@ -96,7 +97,8 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                    getCurrentTopicPage(userCurrentInfo.id, topic.id,topic.title);
+
+                                    getCurrentTopicPage(userCurrentInfo.id, topic.id,topic.title, topic.status);
 
                                    },
                                 ),
@@ -131,10 +133,11 @@ class _MainScreenState extends State<MainScreen> {
 
                           ],
                         ),
-                        Image.asset(
-                          "images/"+topic.icon,
-                          height: double.infinity,
-                          width:90
+                        Image.network(
+                          topic.url!,//"https://images.unsplash.com/photo-1502164980785-f8aa41d53611?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
+                          fit: BoxFit.fill,
+                          width: 90,
+                          height: 80,
                         )
                       ],
                     ),
@@ -162,7 +165,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  int getCurrentTopicPage(String? userId, String topicId, String topic)
+  int getCurrentTopicPage(String? userId, String topicId, String topic, String topicStatus)
   {
     final userTopicId = userId.toString()+"_"+ topicId;
     final filterField="userId_topicId";
@@ -195,7 +198,7 @@ class _MainScreenState extends State<MainScreen> {
               }),
 
                   setState(() {
-                        currentPage = currentPage;
+                        currentPage = (topicStatus=="Complete")?0: currentPage;
                         getPages(topicId,currentPage,topicKey,topic);
                       }),
 
@@ -245,7 +248,7 @@ class _MainScreenState extends State<MainScreen> {
   void getData(BuildContext context) async{
     List<Topics> topics=[];
     List<Pages> pg=[];
-    await topicsRef.once().then((DataSnapshot snapshot){
+    await topicsRef.orderByChild("isActive").equalTo(true) .once().then((DataSnapshot snapshot){
          snapshot.value.forEach((key,values) async {
            Topics topic=new Topics(
             id: key,
@@ -260,6 +263,10 @@ class _MainScreenState extends State<MainScreen> {
              topic.status=value.toString().length==0?"Not Started":value.toString()
            });
 
+           Reference firebaseStorageRef = FirebaseStorage.instance.ref().child(topic.icon);
+           await firebaseStorageRef.getDownloadURL().then((value) => {
+             topic.url = value
+           });
          setState(() {
            topics.add(topic);
          });
