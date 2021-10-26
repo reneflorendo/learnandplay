@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/arraygame.dart';
+import 'package:learnandplay/AllScreens/games/puzzle.dart';
 import 'package:learnandplay/AllScreens/listgame.dart';
 import 'package:learnandplay/AllScreens/registrationscreen.dart';
 import 'package:learnandplay/AllScreens/slides.dart';
@@ -121,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                   onPressed: (){
                                     if (topic.gameId >0) {
-                                      getGame(context, topic.gameId);
+                                      getGame(context,topic.title, topic.gameId);
                                     }
 
                                   },
@@ -143,13 +144,13 @@ class _MainScreenState extends State<MainScreen> {
         )
     );
   }
-  void getGame(BuildContext context, int gameId){
+  void getGame(BuildContext context,String title ,int gameId){
 
     //Navigator.of(context).pop();
 
     switch (gameId){
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ArrayGame()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Puzzle(title)));
         break;
       case 2:
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListGame()));

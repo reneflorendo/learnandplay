@@ -11,6 +11,7 @@ DatabaseReference usersRef= database.reference().child("users");
 DatabaseReference topicsRef=database.reference().child("topics");
 DatabaseReference pagesRef= database.reference().child("pages");
 DatabaseReference studentTopicsRef= database.reference().child("studentTopics");
+DatabaseReference gameRankingRef= database.reference().child("gameRanking");
 
 User? currentFirebaseUser;
 void main() async{
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         RegistrationScreen.idScreen:(context)=> RegistrationScreen(),
         LoginScreen.idScreen:(context)=> LoginScreen(),
         MainScreen.idScreen:(context)=> MainScreen(),
+
       },
       debugShowCheckedModeBanner: false,
     );
