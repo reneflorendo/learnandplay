@@ -5,13 +5,13 @@ class GameRanking
 {
   late String? id;
   late String topic;
-  late String studentId;
+  late String student;
   late String game;
   late String scoreOrTime;
 
   GameRanking({required this.id,
     required this.topic,
-    required this.studentId,
+    required this.student,
     required this.game,
     required this.scoreOrTime});
 
@@ -19,7 +19,7 @@ class GameRanking
   {
     id = dataSnapshot.key;
     topic = dataSnapshot.value["topic"];
-    studentId = dataSnapshot.value["studentId"];
+    student = dataSnapshot.value["student"];
     game = dataSnapshot.value["game"];
     scoreOrTime = dataSnapshot.value["scoreOrTime"];
   }
