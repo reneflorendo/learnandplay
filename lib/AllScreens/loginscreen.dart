@@ -175,11 +175,16 @@ class LoginScreen extends StatelessWidget {
         usersRef.child(firebaseUser.uid).once().then((DataSnapshot snap) {
           if (snap.value != null) {
             userCurrentInfo = Users.fromSnapshot(snap);
-            Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => MainScreen()),
-              ModalRoute.withName('/'),);
-            displayToastMessage("You are logged in!.", context);
+            if (firebaseUser.emailVerified && userCurrentInfo.isActive) {
+              Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => MainScreen()),
+                ModalRoute.withName('/'),);
+              displayToastMessage("You are logged in!.", context);
+            }
+            else {
+              displayToastMessage("Your account is not active yet!", context);
+            }
           }
           else {
             _firebaseAuth.signOut();

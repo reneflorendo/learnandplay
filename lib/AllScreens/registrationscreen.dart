@@ -10,9 +10,6 @@ class RegistrationScreen extends StatelessWidget {
   static const String idScreen = "registerScreen";
   TextEditingController nameTextEditingController= TextEditingController();
   TextEditingController emailTextEditingController= TextEditingController();
-  TextEditingController confirmPasswordTextEditingController= TextEditingController();
-  TextEditingController passwordTextEditingController= TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,44 +68,6 @@ class RegistrationScreen extends StatelessWidget {
                             fontSize: 14.0
                         ),
                       ),
-
-                      SizedBox(height:1.0,),
-                      TextField(
-                        controller: passwordTextEditingController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          labelStyle: TextStyle(
-                              fontSize: 14.0
-                          ),
-                          hintStyle: TextStyle(
-                              color:Colors.grey,
-                              fontSize: 10.0
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontSize: 14.0
-                        ),
-                      ),
-                      SizedBox(height:1.0,),
-                      TextField(
-                        controller: confirmPasswordTextEditingController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Confirm Password",
-                          labelStyle: TextStyle(
-                              fontSize: 14.0
-                          ),
-                          hintStyle: TextStyle(
-                              color:Colors.grey,
-                              fontSize: 10.0
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontSize: 14.0
-                        ),
-                      ),
-
                       SizedBox(height: 10.0),
                       RaisedButton(
                         color:Colors.blue,
@@ -132,16 +91,7 @@ class RegistrationScreen extends StatelessWidget {
                           }
                           else if (!emailTextEditingController.text.contains("@"))
                           {
-                            displayToastMessage("Invalid EMail", context);
-                          }
-                          else if (passwordTextEditingController.text.length < 6)
-                          {
-                            displayToastMessage("Password is at least 6 characters", context);
-
-                          }
-                          else if (passwordTextEditingController.text!=confirmPasswordTextEditingController.text)
-                          {
-                            displayToastMessage("Password not match!", context);
+                            displayToastMessage("Invalid Email", context);
                           }
                           else{
                             registerNewUser(context);
@@ -175,11 +125,11 @@ class RegistrationScreen extends StatelessWidget {
 
   void registerNewUser(BuildContext context) async
   {
-
+   String tempPassword="!Q@W#E%T^Y&U*I(O)Pzxc";
 
     final User? firebaseUser=( await _firebaseAuth.createUserWithEmailAndPassword(
         email: emailTextEditingController.text,
-        password: passwordTextEditingController.text).catchError((errMsg){
+        password: tempPassword).catchError((errMsg){
       displayToastMessage("Error"+errMsg, context);
     })).user;
 
@@ -189,9 +139,10 @@ class RegistrationScreen extends StatelessWidget {
       Map userDataMap={
         "name":nameTextEditingController.text.trim(),
         "email":emailTextEditingController.text.trim(),
-        "password":passwordTextEditingController.text.trim(),
+        "password":tempPassword,
         "year":"1st",
         "isActive":false,
+        "isArchive":false,
         "photo":"user_icon.png"
       };
 

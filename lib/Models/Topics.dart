@@ -8,7 +8,7 @@ class Topics
   late String title;
   late String duration;
   late String icon;
-  late int gameId;
+  late String gameId;
   late String status;
  // late List<Pages> pages;
   Topics({required this.id, required this.title, required this.duration, required this.icon, required this.gameId, required this.status});

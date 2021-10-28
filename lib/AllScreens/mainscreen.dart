@@ -21,7 +21,7 @@ class MainScreen  extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
 }
-
+int currentPage =0;
 class _MainScreenState extends State<MainScreen> {
   List<Topics> _topics=[];
   List<Pages> _pages=[];
@@ -88,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
                                     height: 20.0,
                                     child: Center(
                                       child: Text(
-                                        "Learn",
+                                        (topic.status=="Complete") ?"Retake": "Learn",
                                         style:TextStyle(fontSize: 14.0, fontFamily: "Brand-Bold"),
                                       ) ,
                                     ),
@@ -97,7 +97,7 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                    getCurrentTopicPage(userCurrentInfo.id, topic.id,topic.title);
+                                    getCurrentTopicPage(userCurrentInfo.id, topic.id,topic.title, topic.status);
 
                                    },
                                 ),
@@ -106,7 +106,7 @@ class _MainScreenState extends State<MainScreen> {
                                   width: 3,
                                 ),
                                 RaisedButton(
-                                  color: topic.gameId >0? Colors.blue :Colors.grey,
+                                  color: topic.gameId.length > 0? Colors.blue :Colors.grey,
                                   textColor: Colors.white,
                                   child: Container(
                                     height: 20.0,
@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                                       borderRadius: new BorderRadius.circular(24.0)
                                   ),
                                   onPressed: (){
-                                    if (topic.gameId >0) {
+                                    if (topic.gameId.length > 0) {
                                       getGame(context,topic.title, topic.gameId);
                                     }
 
@@ -144,15 +144,15 @@ class _MainScreenState extends State<MainScreen> {
         )
     );
   }
-  void getGame(BuildContext context,String title ,int gameId){
+  void getGame(BuildContext context,String title ,String gameId){
 
     //Navigator.of(context).pop();
 
     switch (gameId){
-      case 1:
+      case "Puzzle":
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => Puzzle(title)));
         break;
-      case 2:
+      case "ListGame":
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListGame()));
         break;
       default: {
@@ -163,11 +163,11 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  int getCurrentTopicPage(String? userId, String topicId, String topic)
+  int getCurrentTopicPage(String? userId, String topicId, String topic, String status)
   {
     final userTopicId = userId.toString()+"_"+ topicId;
     final filterField="userId_topicId";
-    int currentPage =0;
+
     String topicKey="";
       Map<String, dynamic> studentTopic={
       "userTopicId":userTopicId,
@@ -196,7 +196,13 @@ class _MainScreenState extends State<MainScreen> {
               }),
 
                   setState(() {
+                      if (status=="Complete") {
+                        currentPage =0;
+                        studentTopicsRef.child(topicKey).update(studentTopic);
+                      }
+                      else{
                         currentPage = currentPage;
+                      }
                         getPages(topicId,currentPage,topicKey,topic);
                       }),
 
@@ -239,7 +245,9 @@ class _MainScreenState extends State<MainScreen> {
       // Navigator.pushAndRemoveUntil(context,
       //   MaterialPageRoute(builder: (BuildContext context) =>  Slides(_pages, index,topicId,topicKey,topic)),
       //   ModalRoute.withName('/'),);
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  Slides(_pages, index,topicId,topicKey,topic)));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>  Slides(_pages, index,topicId,topicKey,topic))).whenComplete(() => {
+          getData(context)
+        });
     });
   }
 
@@ -253,7 +261,7 @@ class _MainScreenState extends State<MainScreen> {
             title: values['title'],
             duration: values["duration"],
             icon: values["icon"],
-            gameId:values['gameId'],
+            gameId:values['gameId'].toString(),
             status:"",
            );
 

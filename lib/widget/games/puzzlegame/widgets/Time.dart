@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class Time extends StatelessWidget {
 
-  String secondsPassed;
+  int secondsPassed;
 
   Time(this.secondsPassed);
 
@@ -12,7 +12,7 @@ class Time extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0),
       child: Text(
-        "Time: ${secondsPassed}",
+        "Time: ${secondsPassed} sec",
         style: TextStyle(
           fontSize: 18,
           decoration: TextDecoration.none,

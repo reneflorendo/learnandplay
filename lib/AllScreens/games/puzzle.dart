@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:learnandplay/AllScreens/registrationscreen.dart';
+import 'package:learnandplay/Models/GameRanking.dart';
 import 'package:learnandplay/config.dart';
 import 'package:learnandplay/main.dart';
 import 'package:learnandplay/widget/games/puzzlegame/widgets/Time.dart';
@@ -26,17 +29,22 @@ class _PuzzleState extends State<Puzzle> {
   int secondsPassed = 0;
   bool isActive = false;
   Timer? timer;
-  int seconds=0, minutes=0, hours=0;
+  int seconds = 0,
+      minutes = 0,
+      hours = 0;
+
   @override
   void initState() {
     super.initState();
-    timer =null;
+    timer = null;
     numbers.shuffle();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery
+        .of(context)
+        .size;
     if (timer == null) {
       timer = Timer.periodic(duration, (Timer t) {
         startTime();
@@ -50,7 +58,9 @@ class _PuzzleState extends State<Puzzle> {
         child: Column(
           children: <Widget>[
             MyTitle(size),
-            Time(hours.toString()+":"+minutes.toString()+":"+ seconds.toString()),
+            Time(secondsPassed),
+            // Time(hours.toString() + ":" + minutes.toString() + ":" +
+            //     seconds.toString()),
             Grid(numbers, size, clickGrid),
             Menu(reset, move, secondsPassed, size),
           ],
@@ -80,9 +90,9 @@ class _PuzzleState extends State<Puzzle> {
     if (isActive) {
       setState(() {
         secondsPassed = (secondsPassed + 1);
-        seconds = timer!.tick - (hours * (60 * 60)) - (minutes * 60);
-        minutes = secondsPassed ~/ 60;
-        hours = secondsPassed ~/ (60 * 60);
+        // seconds = timer!.tick - (hours * (60 * 60)) - (minutes * 60);
+        // minutes = secondsPassed ~/ 60;
+        // hours = secondsPassed ~/ (60 * 60);
       });
     }
   }
@@ -92,6 +102,10 @@ class _PuzzleState extends State<Puzzle> {
       numbers.shuffle();
       move = 0;
       secondsPassed = 0;
+      seconds = 0;
+      minutes = 0;
+      hours = 0;
+      timer=null;
       isActive = false;
     });
   }
@@ -108,7 +122,6 @@ class _PuzzleState extends State<Puzzle> {
 
   void checkWin() {
     if (isSorted(numbers)) {
-
       isActive = false;
       showDialog(
           context: context,
@@ -125,25 +138,56 @@ class _PuzzleState extends State<Puzzle> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Congratulations! You made it! " + secondsPassed.toString(),
+                        "Congratulations! You made it! " ,
                         style: TextStyle(fontSize: 20),
                       ),
                       SizedBox(
                         width: 220.0,
                         child: RaisedButton(
-                          onPressed: () {
-                            Map<String, dynamic> pageDataMap={
-                              "topic":_topic,
-                              "student": userCurrentInfo.name.toUpperCase(), //descriptionController.text, //html,
+                          onPressed: () async {
+                            //var rng = new Random();
+                           // var code = rng.nextInt(900000) + 100000;
+
+                            Map<String, dynamic> gameRankingMap = {
+                              "topic": _topic,
+                              "studentId": userCurrentInfo.id,
+                              "studentGameId": userCurrentInfo.id.toString() +
+                                  "_Puzzle",
+                              "student": userCurrentInfo.name.toUpperCase(),
+                              //descriptionController.text, //html,
                               "game": "Puzzle",
-                              "scoreOrTime":secondsPassed.toString(),
+                              "scoreOrTime": secondsPassed,
                             };
 
-                            gameRankingRef.push().set(pageDataMap).then((value) => {
-                             // displayToastMessage("Page created!", context),
-                                Navigator.pop(context),
-                            });
+                            var userGameId = userCurrentInfo.id.toString() +
+                                "_Puzzle";
+                            String rankKey = "";
+                            await gameRankingRef.orderByChild("studentGameId")
+                                .equalTo(userGameId).once().then((
+                                DataSnapshot snapshot) async =>
+                            {
+                              if (snapshot.value != null){
 
+                                snapshot.value.forEach((key, values) {
+                                  rankKey = key;
+                                }),
+                                await gameRankingRef.child(rankKey).update(
+                                    gameRankingMap).then((value) =>
+                                {
+                                  Navigator.pop(context),
+                                })
+                              }
+                              else
+                                {
+                                  await gameRankingRef.push()
+                                      .set(gameRankingMap)
+                                      .then((value) =>
+                                  {
+                                    // displayToastMessage("Page created!", context),
+                                    Navigator.pop(context),
+                                  })
+                                }
+                            });
                           },
                           child: Text(
                             "Close",
